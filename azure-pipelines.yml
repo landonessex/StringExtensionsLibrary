@@ -1,0 +1,43 @@
+trigger:
+- main
+
+pool:
+  name: 'MySelfHostedPool'
+
+variables:
+  buildConfiguration: 'Release'
+  
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet packages'
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build the project'
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Pack NuGet package'
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/*.csproj'
+    versioningScheme: 'byPrereleaseNumber'
+    majorVersion: '1'
+    minorVersion: '0'
+    patchVersion: '0'
+
+- task: NuGetAuthenticate@1
+  displayName: 'NuGet Authenticate'
+
+- task: NuGetCommand@2
+  displayName: 'Push NuGet package to feed'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: 'StringExtensionsProject/StringExtensionsFeed'  # Format: ProjectName/FeedName
