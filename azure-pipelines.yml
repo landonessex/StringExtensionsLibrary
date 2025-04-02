@@ -4,40 +4,6 @@ trigger:
 pool:
   name: 'MySelfHostedPool'
 
-variables:
-  buildConfiguration: 'Release'
-  
 steps:
-- task: DotNetCoreCLI@2
-  displayName: 'Restore NuGet packages'
-  inputs:
-    command: 'restore'
-    projects: '**/*.csproj'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Build the project'
-  inputs:
-    command: 'build'
-    projects: '**/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Pack NuGet package'
-  inputs:
-    command: 'pack'
-    packagesToPack: '**/*.csproj'
-    versioningScheme: 'byPrereleaseNumber'
-    majorVersion: '1'
-    minorVersion: '0'
-    patchVersion: '0'
-
-- task: NuGetAuthenticate@1
-  displayName: 'NuGet Authenticate'
-
-- task: NuGetCommand@2
-  displayName: 'Push NuGet package to feed'
-  inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
-    nuGetFeedType: 'internal'
-    publishVstsFeed: 'b7ed8ccd-035c-44ff-867a-5fd8cbf00e7f/b8cccaa6-7dd7-7590-8371-55ddc5988967'
+- script: echo "Testing the pipeline"
+  displayName: 'Test Step'
